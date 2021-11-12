@@ -1,0 +1,50 @@
+
+#demoCanvas
+{
+	background-color: #fbc55b;
+	border:1px solid #000000;
+	border-radius: 15px;	
+}
+
+h1 
+{
+	text-align:center;
+}
+
+body
+{
+	background-position: left top;	
+    background-repeat: no-repeat;
+	background-size: cover;
+	background-image: url("../images/background.png");
+}
+
+td
+{
+	font-size: 25px;
+}
+
+input[type="text"] 
+{
+    font-size:25px;
+}
+
+input[type="button"] 
+{
+    font-size:25px;
+}
+
+select
+{
+    font-size:25px;
+}
+
+h1
+{
+	color: white;
+}
+
+#backdiv
+{
+	background-color: #aacccccc;
+}

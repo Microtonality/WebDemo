@@ -1,0 +1,91 @@
+<html>
+<head>
+	<title>Microtonal Scale Demo</title>
+	
+	<link rel="stylesheet" href="css/styles.css">
+	<script src="js/color.js"></script>
+	<script src="js/ui.js"></script>
+	<script src="js/hexagon.js"></script>
+	<script src="js/soundFiles.js"></script>
+	<script src="js/scales.js"></script>
+	<script src="js/canvasEvents.js"></script>
+	<script src="js/code.js"></script>
+	
+</head>
+<body onload="setup();">
+
+	<h1>Welcome! This is a demo of microtonal scale generation.</h1>
+
+	<canvas id="demoCanvas">
+	</canvas>
+
+	<br /><br />
+
+	<div id="backdiv">
+	<br />
+	<table><tr><td>
+	<table>
+		<tr>
+			<td align="right">Divisions: </td>
+			<td><input type="text" id="divisions" name="divisions" value="15"></td>
+		</tr>
+		<tr>
+			<td align="right">Reference Frequency: </td>
+			<td><input type="text" id="referencePitch" name="referencePitch" value="440"></td>
+		</tr>
+		<tr>
+			<td align="right">Start Color: </td>
+			<td><input type="color" id="startColor" name="startColor" value="#1111ff"></td>
+		</tr>
+		<tr>
+			<td align="right">End Color: </td>
+			<td><input type="color" id="endColor" name="endColor" value="#ff11ff"></td>
+		</tr>
+		<tr>
+			<td align="right">Sound Type: </td>
+			<td>
+				<select name="soundType" id="soundType" onchange="registerSoundTypeChange();">
+					<option value="sine" selected>Sine</option>
+					<option value="square">Square</option>
+					<option value="triangle">Triangle</option>
+				</select>			
+			</td>
+		</tr>
+		<tr>
+			<td align="right">Amplitude: </td>
+			<td>
+				<select name="ampitude" id="amplitude" onchange="registerAmplitudeChange();">
+					<option value="1" selected>100%</option>
+					<option value=".9">90%</option>
+					<option value=".8">80%</option>
+					<option value=".7">70%</option>
+					<option value=".6">60%</option>
+					<option value=".5">50%</option>
+					<option value=".4">40%</option>
+					<option value=".3">30%</option>
+					<option value=".2">20%</option>
+					<option value=".1">10%</option>
+				</select>			
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center"><input type="button" id="generate" name="generate" value = "Generate" onclick="doGenerate();"></td>
+		</tr>
+	</table></td>
+	<td> &nbsp;</td>
+	<td>
+		<h3>Maintained by William Ayers and Rick Leinecker</h3>
+		<a href="../contact.html">Contact Page</a><br />
+		<a href="code.zip">Source code</a><br />
+		<a href="mse.pdf" target="_blank">Software Engineering</a>
+	
+	
+	</td></tr></table>
+	<br />
+	</div>
+	
+</body>
+</html>
