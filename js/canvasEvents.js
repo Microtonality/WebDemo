@@ -34,14 +34,14 @@ var savedRect;
 function killHover()
 {
 	
-	// If we have do not have a valid hover index (we detected the mouse was over a hexagon)
+	// If we do not have a valid hover index (we detected the mouse was over a hexagon)
 	if( detectedHoverIndex < 0 )
 	{
 		return;
 	}
 
 	// Draw the original hexagon
-	drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false);
+	drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false,hex[19]);
 		
 	// Set so we know we are not in a valid hover area.
 	detectedHoverIndex = -1;
@@ -69,7 +69,7 @@ function killClick(x,y)
 	if( detectedClickIndex >= 0 )
 	{
 		// Draw the original hexagon
-		drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false);
+		drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false,hex[19]);
 		
 		// Set so we know we are not in a valid click area.
 		detectedClickIndex = -1;
@@ -139,7 +139,7 @@ function handleMouseMove( x, y )
 			killHover();
 			
 			// Draw the nexagon in the hoverColor (that was calculated upon creation).
-			drawHexagon(hexagon[15],hexagon[16],hexagon[17],hoverColor,hexagon[18]);
+			drawHexagon(hexagon[15],hexagon[16],hexagon[17],hoverColor,hexagon[18],false,hex[19]);
 			
 			// Set our hover index so we know we are hovering.
 			detectedHoverIndex = i;
@@ -182,7 +182,7 @@ function handleMouseDown( x, y )
 			killHover();
 
 			// Draw the nexagon in the clickColor (that was calculated upon creation).
-			drawHexagon(hex[15],hex[16],hex[17],clickColor,hex[18]);
+			drawHexagon(hex[15],hex[16],hex[17],clickColor,hex[18],false,hex[19]);
 			
 			// Set our click index so we know we are clicking.
 			detectedClickIndex = i;
@@ -212,7 +212,7 @@ function handleMouseDown( x, y )
 function handleMouseUp( x, y )
 {
 	// Turn any note that is playing off.
-	killNote();
+	killNote(detectedClickIndex);
 	
 	// Kill any click that has been recorded.
 	killClick(x,y);

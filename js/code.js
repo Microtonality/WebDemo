@@ -120,7 +120,7 @@ function drawMe()
 		var label = scale[i];
 		
 		// Draw the hexagon and assign the drawn width to dx.
-		var dx = _drawHexagon( x, y, dw, fillColor, label, ctx, true );
+		var dx = _drawHexagon( x, y, dw, fillColor, label, ctx, true, keyBuffer[i] );
 		// Adjust x by adding the width of the hexagon.
 		x += dx;
 
@@ -154,6 +154,8 @@ function doGenerate()
 	// This array contains the note buffers.
 	nodes = [];
 
+	// Here we call the function get get all UI values
+	//	before we start. An error shouldn't happen, but might.
 	var error = getValuesFromUI()
 	if( error.length > 0 )
 	{
@@ -191,6 +193,12 @@ function setCanvasWidth()
 	canvas.width = w;
 }
 
+// Keys that will be used for keyboard play.
+var keys = ['1','2','3','4','5','6','7,','8','9','0',
+	'q','w','e','r','t','y','u','i','o','p','[',']',
+	'a','s','d','f','g','h','j','k','l',';',
+	'z','x','c','v','b','n','m',',','.'];
+
 //////////////////////////////////////////////////
 //
 // Source: code.js
@@ -204,6 +212,7 @@ function setCanvasWidth()
 //
 function setup()
 {
+	
 	// Set the initial canvase width. FYI: setting the width in CSS
 	//		causes the text to be blurry.
 	setCanvasWidth();
@@ -237,6 +246,85 @@ function setup()
 		drawMe();
 	});
 	
+	// This is the event to handle a keydown event.
+	document.getElementById("myBody").addEventListener("keydown", function(event)
+	{
+		// getKeyIndex returns the corresponding index
+		//	of the polygon (note) associated with the key.
+		//	If none are found we get a -1 back.
+		var index = getKeyIndex( event.key );
+		
+		// If we have a valid key index and this note is not already
+		//	pressed then...
+		if( index >= 0 && !onBuffer[index] )
+		{
+			// Remember that this key is pressed.
+			onBuffer[index] = true;
+			
+			// Get the hexagon for this index.
+			var hex = hexagonList[index];
+		
+			// Draw the nexagon in the clickColor (that was calculated upon creation).
+			drawHexagon(hex[15],hex[16],hex[17],clickColor,hex[18],false,hex[19]);
+			
+			// Call the playNote() function based on the index.
+			playNote(index);
+		}
+	});
+	
+	document.getElementById("myBody").addEventListener("keyup", function(event)
+	{
+		// getKeyIndex returns the corresponding index
+		//	of the polygon (note) associated with the key.
+		//	If none are found we get a -1 back.
+		var index = getKeyIndex( event.key );
+		
+		// If we have a valid key index and this note is not already
+		//	pressed then...
+		if( index >= 0 && onBuffer[index] )
+		{
+			// Remember that this key is no longer pressed.
+			onBuffer[index] = false;
+			
+			// Get the hexagon for this index.
+			var hex = hexagonList[index];
+		
+			// Draw the nexagon in the clickColor (that was calculated upon creation).
+			drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false,hex[19]);
+			
+			// Call the playNote() function based on the index.
+			killNote(index);
+		}
+	});
+	
+}
+
+//////////////////////////////////////////////////
+//
+// Source: code.js
+// Function: getKeyIndex
+//
+// Parameters:
+//   key
+//
+// Description: This function takes a key value such as a, b, c, etc
+//		and returns the polygon (or note) that is associated with it.
+//		If none are found it returns a -1.
+//
+function getKeyIndex( key )
+{
+	// Loop through the keyBuffer.
+	for( var i=0; i<keyBuffer.length; i++ )
+	{
+		// See if we found a match.
+		if( key == keyBuffer[i] )
+		{
+			// Return the index.
+			return i;
+		}
+	}
+	// None found, return -1.
+	return -1;
 }
 
 //////////////////////////////////////////////////

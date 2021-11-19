@@ -12,7 +12,7 @@
 	<script src="js/code.js"></script>
 	
 </head>
-<body onload="setup();">
+<body onload="setup();" id="myBody">
 
 	<h1>Welcome! This is a demo of microtonal scale generation.</h1>
 
@@ -45,9 +45,21 @@
 			<td align="right">Sound Type: </td>
 			<td>
 				<select name="soundType" id="soundType" onchange="registerSoundTypeChange();">
-					<option value="sine" selected>Sine</option>
-					<option value="square">Square</option>
-					<option value="triangle">Triangle</option>
+					<option value="0" selected>Sine</option>
+					<option value="1">Square</option>
+					<option value="2">Triangle</option>
+					
+					<!-- Added 11-16-2021 -->
+					<option value="-1" >----------</option>
+					<option value="3">Flute</option>
+					<option value="4">Oboe</option>
+					<option value="6">Clarinet</option>
+					<option value="7">Bassoon</option>
+					<option value="8">Trumpet</option>
+					<option value="9">French Horn</option>
+					<option value="10">Trombone</option>
+					<option value="11">Tuba</option>
+					
 				</select>			
 			</td>
 		</tr>
@@ -69,7 +81,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center">&nbsp;</td>
+			<td colspan="2" align="center">&nbsp;<span id="range" style="color: #aa0000; font-weight:bold;"></span></td>
 		</tr>
 		<tr>
 			<td colspan="2" align="center"><input type="button" id="generate" name="generate" value = "Generate" onclick="doGenerate();"></td>

@@ -111,13 +111,13 @@ function calcDX( hexagon, numberOfSides )
 //		Note that the last parameter determines whether the hexagon 
 //		gets added to the list or just gets drawn.
 //
-function drawHexagon(xCenter,yCenter,size,fillColor,label,appendHex)
+function drawHexagon(xCenter,yCenter,size,fillColor,label,appendHex,key)
 {
 	// Get a context to the canvas.
 	var ctx = document.getElementById('demoCanvas').getContext('2d');
 
 	// Call the local _drawHexagon function. This will return the width.
-	return _drawHexagon( xCenter,yCenter,size,fillColor,label, ctx, appendHex );
+	return _drawHexagon( xCenter,yCenter,size,fillColor,label, ctx, appendHex, key );
 }
 
 //////////////////////////////////////////////////
@@ -138,7 +138,7 @@ function drawHexagon(xCenter,yCenter,size,fillColor,label,appendHex)
 //		Once again note the appendHex parameters determines if this
 //		hexagon is added to the list.
 //
-function _drawHexagon(xCenter,yCenter,size,fillColor,label,ctx, appendHex)
+function _drawHexagon(xCenter,yCenter,size,fillColor,label,ctx,appendHex,key)
 {
 	// Duh. But this is to be somewhat extensible.
 	var numberOfSides = 6;
@@ -169,6 +169,9 @@ function _drawHexagon(xCenter,yCenter,size,fillColor,label,ctx, appendHex)
 	hexagon.push( yCenter );
 	hexagon.push(size);
 	hexagon.push(label);
+	// This was recently added. We record the
+	//	key value associated with this polygone (note).
+	hexagon.push( key );
 
 	// This is the border color.
 	ctx.strokeStyle = "#000000";
@@ -189,7 +192,7 @@ function _drawHexagon(xCenter,yCenter,size,fillColor,label,ctx, appendHex)
 	ctx.textAlign = "center";	
 	ctx.font = "14px Arial";
 	
-	// THe following conditionals are the result of a bunch of testing.
+	// The following conditionals are the result of a bunch of testing.
 	if( size < 30 && size >= 24.5 )
 	{
 		ctx.font = "10px Arial";
@@ -224,6 +227,29 @@ function _drawHexagon(xCenter,yCenter,size,fillColor,label,ctx, appendHex)
 	}
 	// Draw the text.
 	ctx.fillText(label, xCenter, yCenter+2);
+	
+	// Draw key mapping.
+	if( key != ' ' )
+	{
+		// The line will be white.
+		ctx.strokeStyle = "white";
+		// Start the draw path.
+		ctx.beginPath();
+		// First point.
+		ctx.moveTo(xCenter,hexagon[3]);
+		// Second point.
+		ctx.lineTo(xCenter,hexagon[3]+10);
+		// Now draw the line.
+		ctx.stroke();		
+		// Set the texst size.
+		ctx.font = "23px Arial";
+		// Set the text color.
+		ctx.fillStyle = "red";
+		// Center on a point.
+		ctx.textAlign = "center";	
+		// Draw the text.
+		ctx.fillText(key, xCenter, hexagon[3]+25);
+	}
 
 	// Calculate the hexagon width.
 	var dx = calcDX( hexagon, numberOfSides );
