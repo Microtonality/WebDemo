@@ -226,46 +226,6 @@ function _playNote( buffer, index )
 //////////////////////////////////////////////////
 //
 // Source: soundFiles.js
-// Function: taperVolume
-//
-// Parameters:
-//   index
-//
-// Description: Taper a note's volume over time in order to
-//		prevent the "end fo note" click".
-//
-function taperVolume( index )
-{
-	
-	// We need to keep count.
-	timer[index]++;
-	
-	// Decrease  the gain (volume).
-	var g = gain[index].gain.value - .1;
-	// Make sure we are not out of range.
-	if( g >= .1 )
-	{
-		// Set to lessened gain.
-		gain[index].gain.value = g;
-	}
-
-	// See if we exceeded the time count in order to end the note.
-	if( timer[index] > 20 )
-	{
-		// Stop the timer.
-		clearInterval(interval[index]);
-				
-		// This will stop the note from playing.
-		node[index].disconnect();
-				
-		// Reset our flag.
-		playing[index] = false;
-	}
-}
-
-//////////////////////////////////////////////////
-//
-// Source: soundFiles.js
 // Function: killNote
 //
 // Parameters:
@@ -280,8 +240,10 @@ function killNote( index )
 	{
 		// We start our timer at 0.
 		timer[index] = 0;
-		// Kick off the javascript timer.
-		interval[index] = setInterval( taperVolume, 1, index );
+
+		// Taper sound down to avoid "click"
+		gain[index].gain.setValueAtTime(gain[index].gain.value, ctx[index].currentTime);
+		gain[index].gain.exponentialRampToValueAtTime(0.0001, ctx[index].currentTime + 0.03);	
 	}
 }
 
