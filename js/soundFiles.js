@@ -50,16 +50,7 @@ function generateNoteList(scale,amplitude,soundType)
 	//	everything off.
 	var keyBufferCount = Math.round( ( keys.length - scale.length ) / 2 );
 
-	// For sine, square, triangle, and separator we will set the range to nothing.
-	if( soundType < 4 )
-	{
-		document.getElementById("range").innerHTML = "";
-	}
-	// For the instruments we set the UI text.
-	else
-	{
-		document.getElementById("range").innerHTML = ranges[soundType-4];
-	}
+	showRange( soundType, scale );
 	
 	// Go through each scale frequency.
 	for( var i=0; i<scale.length; i++ )
@@ -126,6 +117,50 @@ function generateNoteList(scale,amplitude,soundType)
 		
 		// Save the buffer into the array.
 		noteBuffer.push( buffer );
+	}
+}
+
+function showRange( soundType, scale )
+{
+	// For sine, square, triangle, and separator we will set the range to nothing.
+	if( soundType < 4 )
+	{
+		document.getElementById("range").innerHTML = "";
+	}
+	// For the instruments we set the UI text.
+	else
+	{
+		// Set display variable to the basic range.
+		var display = ranges[soundType-4];
+		
+		// If a scale has been generated...
+		if( scale.length > 0 )
+		{
+			// Get the numeric ranges for this instrument.
+			var r = rs[soundType-4];
+			
+			// We will count the number of notes that are in
+			//	range of this instrument.
+			var inCount = 0;
+			
+			// Loop through the scale.
+			for( var i=0; i<scale.length; i++ )
+			{
+				// If the note is in range we count it.
+				if( scale[i] >= r[0] && scale[i] <= r[1] )
+				{
+					inCount++;
+				}
+			}
+			// Calculate percentage.
+			var percentage = ( inCount / scale.length ) * 100;
+			// Limit to two decimal places.
+			percentage = Math.round(percentage * 100) / 100
+			// Append to the display string.
+			display += ( " " + percentage + "% in range" );
+		}
+		// Set the display string.
+		document.getElementById("range").innerHTML = display;
 	}
 }
 
@@ -874,3 +909,14 @@ var tromboneRange = "Range: e2 (82.4) to d#5 (622.25)";
 var tubaRange = "Range: c2 (65.4) to g4 (91.99)";
 // Aggregate the ranges.
 var ranges = [fluteRange,oboeRange,clarinetRange,bassoonRange,trumpetRange,frenchhornRange,tromboneRange,tubaRange];
+
+// We need ranges as numbers so we can calculate in/out percentange
+var fr = [261.62,2093.0];
+var or = [233.08,1396.91];
+var cr = [146.83,1174.66];
+var br = [58.27,349.22];
+var trr = [184.99,1244.51];
+var fhr = [73.41,587.33];
+var tbr = [82.4,622.25];
+var tur = [65.4,91.99];
+var rs = [fr,or,cr,br,trr,fhr,tbr,tur];

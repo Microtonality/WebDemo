@@ -41,7 +41,7 @@ function generateScale(referencePitch, numSteps)
 		var pitch = referencePitch * (Math.pow(NthRoot, i));
 		
 		// Round it so we only have two decimal places.
-		pitch = Math.round(pitch * 100) / 100
+		pitch = Math.round(pitch * 100) / 100;
 		
 		// Store in the scale array.
 		scale[i] = pitch;
