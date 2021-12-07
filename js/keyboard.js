@@ -418,7 +418,7 @@ function generateWhiteKeyNoNotches(x,y,state,key)
 	// |        |
 	// |        |
 	// ---------*
-	keyData.push( keyData[upperRightX], y + whiteKeyHeight );
+	keyData.push( keyData[ upperRightX], y + whiteKeyHeight );
 	
 	// ----------
 	// |        |

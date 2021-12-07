@@ -53,6 +53,9 @@ const b_lowerRightY = 9;
 const b_lowerLeftX = 10;
 const b_lowerLeftY = 11;
 
+const upperRightX = 4;
+const lowerRightY = 7;
+
 const upBlackKeyColor = "#000000";
 const downBlackKeyColor = "#aaaaaa";
 const hoverBlackKeyColor = "#555555";
