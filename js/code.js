@@ -1,4 +1,5 @@
 //////////////////////////////////////////////////
+//////////////////////////////////////////////////
 //
 // code.js
 //
@@ -27,20 +28,15 @@ var endColor = "#ff11ff";
 //		the ending color channels, and the delta for each color channel.
 var sr, sg, sb, er, eg, eb, dr, dg, db;
 
-// This is the hover color that will be calculated when the scale is generated.
-var hoverColor = "#111111";
-
-// This is the click color that will be calculated when the scale is generated.
-var clickColor = "#222222";
-
-// The list of hexagons for the scale.
-var hexagonList = [];
-
 // 0=sine, 1=square, 2=triangle
 var soundType = -1;
 
 // The amplitude for the sounds. values are 1, .9, .8. ,7, etc.
 var amplitude = 1;
+
+let octave = -1;
+
+var background = new Image();
 
 //////////////////////////////////////////////////
 //
@@ -55,88 +51,101 @@ var amplitude = 1;
 //
 function drawMe()
 {
-	
-	// A length of 0 means we haven't generated a scale yet and cannot draw.
-	if( scale.length <= 0 )
-	{
-		return;
-	}
-
 	// Get the canvas object.
-	var canvas = document.getElementById('demoCanvas');
+	let canvas = document.getElementById('demoCanvas');
 	// Get the context to the canvase with which we will draw.
-	var ctx = canvas.getContext('2d');
+	let ctx = canvas.getContext('2d');
 	// Clear the canvas so that we start with a blank object.
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-	// Here we save the upper left corner of the canvas so that we
-	//		can restore it. This is mainly used when we change or erase
-	//		the frequency value.
-	savedRect = ctx.getImageData(0, 0, 200, 40);
 	
-	// Empty the hexagon list.
-	hexagonList = [];
+	drawKeyboard(divisions+1);
 
-	// Call the function that calculates the colors for our draw.
-	//		This includes sr, sg, sb, er, eg, eb, dr, dg, and db
-	calcColors(divisions);
+}
+
+function setMiniKeyboard( number )
+{
+	// VERY TEMP
+	return;
 	
-	// Now we use local copies of the starting color channel values so that
-	//		we can adjust them for each step without affecting the "global" values.
-	var r = sr, g = sg, b = sb;
+	let obj = document.getElementById("miniKeyboardImage");
+	obj.src = "images/img" + number + ".png";
+}
 
-	// Here we calculate how wide we want to draw each hexagon.
-	var dw = ( canvas.width / scale.length ) / 2;
-	// Here is the height.
-	var h = canvas.height;
-	// Limit the width to 30. For scales of 12-19 this means the hexagons
-	//		don't fully fill the canvas.
-	if( dw > 30 )
+function newScale()
+{
+	var lowestOctave = ( referencePitch / 4 );
+	var rp = lowestOctave * Math.pow( 2, octave - 1 );
+	
+	// Generate the scale and save the array into scale variable.
+	scale = generateScale( rp, divisions );
+	
+	// Generate the note list. This will populate noteList.
+	generateNoteList(scale,amplitude,soundType);
+}
+
+function doPlus()
+{
+	if( octave != -1 && octave < 5 )
 	{
-		dw = 30;
+		octave++;
+		drawMini();
+		newScale();
 	}
-	
-	// Calculate the starting x and y coordinates.
-	var x = dw + 5;
-	var y = h / 2;
+}
 
-	// We need the mid frequency in the list.
-	var mid = Math.round( scale.length / 2 );
-	
-	// Count up through each scale frequency.
-	for( var i=0; i<scale.length; i++ )
+function doMinus()
+{
+	if( octave > 1 )
 	{
-		// Build the color for the current hexagon. Note that as we
-		//		move through the hexagons, this value changes.
-		var fillColor = buildColor( r, g, b );
-		
-		// Add the delta values to the r, g, and b channels.
-		r += dr;
-		g += dg;
-		b += db;
+		octave--;
+		drawMini();
+		newScale();
+	}
+}
 
-		// Get the frequency so that we can assign it to the hexagon.
-		//		This draws the frequency within the hexagon.
-		var label = scale[i];
-		
-		// Draw the hexagon and assign the drawn width to dx.
-		var dx = _drawHexagon( x, y, dw, fillColor, label, ctx, true, keyBuffer[i] );
-		// Adjust x by adding the width of the hexagon.
-		x += dx;
-
-		// If we are at the mid point we want to calculate the hover and
-		//		click colors so that we have values that work for the
-		//		entire range.
-		if( i == mid )
+function getDivisionWidth()
+{
+	let w = 5;
+	
+	for( var i=0; i<_numKeysToDraw; i++ )
+	{
+		var mod = i % 12;
+		if( mod == 1 || mod == 3 || mod == 6 || mod == 8 || mod == 10 )
 		{
-			// Brighten by 80
-			hoverColor = addColor( fillColor, 80 );
-			// Brighten by 160
-			clickColor = addColor( fillColor, 160 );
+			if( i == _numKeysToDraw - 1 )
+			{
+				w += 4;
+			}
 		}
-		
+		else
+		{
+			w += 8;
+		}
 	}
+	return w;
+}
+
+function drawMini()
+{
+	var w = getDivisionWidth();
 	
+	let ctx = document.getElementById('mini').getContext('2d');
+	ctx.drawImage(background,0,0,419,150);
+	
+	// The line will be white.
+	ctx.strokeStyle = "green";
+	ctx.lineWidth = 5;
+	
+	// Start the draw path.
+	ctx.beginPath();
+	ctx.moveTo(16 + (octave - 1 ) * 56, 75);
+	ctx.lineTo(16 + (octave - 1 ) * 56, 5);
+	ctx.lineTo(16 + (octave - 1 ) * 56 + w, 5);
+	ctx.lineTo(16 + (octave - 1 ) * 56 + w, 75);
+
+	// Now draw the line.
+	ctx.stroke();		
+
 }
 
 //////////////////////////////////////////////////
@@ -168,6 +177,27 @@ function doGenerate()
 	// Generate the note list. This will populate noteList.
 	generateNoteList(scale,amplitude,soundType);
 
+	octave = 3;
+	setMiniKeyboard( 3 );
+	
+	_numKeysToDraw = divisions + 1;
+	
+	let canvas = document.getElementById('demoCanvas');
+	let w = setKeyboardData( 0, 10 );
+	setKeyboardData( ( canvas.width - w ) / 2, 10 );
+
+	background.src = "images/img0.png";
+	background.onload = function()
+	{
+		drawMini();
+	}
+
+	let obj = document.getElementById("minus");
+	obj.src = "images/minus.png";
+	
+	obj = document.getElementById("plus");
+	obj.src = "images/plus.png";
+	
 	// Call the code that draws the hexagons.
 	drawMe();
 }
@@ -180,17 +210,22 @@ function doGenerate()
 // Parameters:
 //   None
 //
-// Description: This sets the canvase width, which is important for when the
+// Description: This sets the canvas width, which is important for when the
 //		user resizes the window.
 //
 function setCanvasWidth()
 {
 	// Get the canvase object.
-	var canvas = document.getElementById('demoCanvas');
+	let canvas = document.getElementById('demoCanvas');
 	// Calculate the adjusted width (25 is for the scrollbar, etc.)
-	var w = window.innerWidth - 25;
+	let w = window.innerWidth - 25;
+	let h = whiteKeyHeight + 20//w * .25;
 	// Set the canvas width.
 	canvas.width = w;
+	canvas.height = h;
+	
+	w = setKeyboardData( 0, 10 );
+	setKeyboardData( ( canvas.width - w ) / 2, 10 );
 }
 
 // Keys that will be used for keyboard play.
@@ -212,7 +247,7 @@ var keys = ['1','2','3','4','5','6','7,','8','9','0',
 //
 function setup()
 {
-	
+
 	// Set the initial canvase width. FYI: setting the width in CSS
 	//		causes the text to be blurry.
 	setCanvasWidth();
@@ -249,51 +284,19 @@ function setup()
 	// This is the event to handle a keydown event.
 	document.getElementById("myBody").addEventListener("keydown", function(event)
 	{
-		// getKeyIndex returns the corresponding index
-		//	of the polygon (note) associated with the key.
-		//	If none are found we get a -1 back.
-		var index = getKeyIndex( event.key );
-		
-		// If we have a valid key index and this note is not already
-		//	pressed then...
-		if( index >= 0 && !onBuffer[index] )
+		let index = keyPressed( event.key );
+		if( index >= 0 && !playing[index] )
 		{
-			// Remember that this key is pressed.
-			onBuffer[index] = true;
-			
-			// Get the hexagon for this index.
-			var hex = hexagonList[index];
-		
-			// Draw the nexagon in the clickColor (that was calculated upon creation).
-			drawHexagon(hex[15],hex[16],hex[17],clickColor,hex[18],false,hex[19]);
-			
-			// Call the playNote() function based on the index.
-			playNote(index);
+			playNote( index );
 		}
 	});
 	
 	document.getElementById("myBody").addEventListener("keyup", function(event)
 	{
-		// getKeyIndex returns the corresponding index
-		//	of the polygon (note) associated with the key.
-		//	If none are found we get a -1 back.
-		var index = getKeyIndex( event.key );
-		
-		// If we have a valid key index and this note is not already
-		//	pressed then...
-		if( index >= 0 && onBuffer[index] )
+		let index = keyUnpressed( event.key );
+		if( index >= 0  && playing[index] )
 		{
-			// Remember that this key is no longer pressed.
-			onBuffer[index] = false;
-			
-			// Get the hexagon for this index.
-			var hex = hexagonList[index];
-		
-			// Draw the nexagon in the clickColor (that was calculated upon creation).
-			drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false,hex[19]);
-			
-			// Call the playNote() function based on the index.
-			killNote(index);
+			killNote( index );
 		}
 	});
 	

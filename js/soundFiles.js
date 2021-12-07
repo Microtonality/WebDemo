@@ -202,6 +202,7 @@ var timer = [];
 //
 function _playNote( buffer, index )
 {
+	
 	// Create this node value for playing and stopping.
 	node[index] = ctx[index].createBufferSource();
 	// Set the node.buffer to point to the note that was already calculated.
@@ -239,12 +240,11 @@ function killNote( index )
 	// Only do this if the playing flag is set.
 	if( playing[index] )
 	{
-		// We start our timer at 0.
-		timer[index] = 0;
-
 		// Taper sound down to avoid "click"
 		gain[index].gain.setValueAtTime(gain[index].gain.value, ctx[index].currentTime);
 		gain[index].gain.exponentialRampToValueAtTime(0.0001, ctx[index].currentTime + 0.03);	
+		
+		playing[index] = false;
 	}
 }
 

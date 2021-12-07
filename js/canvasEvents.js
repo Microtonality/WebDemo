@@ -23,62 +23,6 @@ var savedRect;
 //////////////////////////////////////////////////
 //
 // Source: canvasEvents.js
-// Function: killHover
-//
-// Parameters:
-//   None
-//
-// Description: If there is a hexagon drawn in the hover color, redraw it in
-//		is non-hover color.
-//
-function killHover()
-{
-	
-	// If we do not have a valid hover index (we detected the mouse was over a hexagon)
-	if( detectedHoverIndex < 0 )
-	{
-		return;
-	}
-
-	// Draw the original hexagon
-	drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false,hex[19]);
-		
-	// Set so we know we are not in a valid hover area.
-	detectedHoverIndex = -1;
-		
-	// Show a blank frequency in the upper left corner of the canvas.
-	showFrequency( "" );
-}
-
-//////////////////////////////////////////////////
-//
-// Source: canvasEvents.js
-// Function: killClick
-//
-// Parameters:
-//   x
-//   y
-//
-// Description: If there is a hexagon drawn in the click color, redraw it in
-//		is non-hover color.
-//
-function killClick(x,y)
-{
-	
-	// If we have a valid click index (we detected the mouse was clicked on a hexagon)
-	if( detectedClickIndex >= 0 )
-	{
-		// Draw the original hexagon
-		drawHexagon(hex[15],hex[16],hex[17],hex[14],hex[18],false,hex[19]);
-		
-		// Set so we know we are not in a valid click area.
-		detectedClickIndex = -1;
-	}
-}
-
-//////////////////////////////////////////////////
-//
-// Source: canvasEvents.js
 // Function: showFrequency
 //
 // Parameters:
@@ -117,42 +61,13 @@ function showFrequency( freq )
 function handleMouseMove( x, y )
 {
 
-	// Go through each scale frequency. Each of these will correspond to a hexagon.
-	for( var i=0; i<scale.length; i++ )
-	{
-		// Get the nexagon at index i.
-		hexagon = hexagonList[i];
-		
-		// See if x and y are in the hexagon.
-		if( isInHexagon( x, y, hexagon ) )
-		{
-			// We have already detected this over index.
-			if( i == detectedHoverIndex )
-			{
-				return;
-			}
-			
-			// Save this hexagon for a restore.
-			hex = hexagon;
-			
-			// If so kill any hover that might exist.
-			killHover();
-			
-			// Draw the nexagon in the hoverColor (that was calculated upon creation).
-			drawHexagon(hexagon[15],hexagon[16],hexagon[17],hoverColor,hexagon[18],false,hex[19]);
-			
-			// Set our hover index so we know we are hovering.
-			detectedHoverIndex = i;
-			
-			// Show the frequency for this hexagon.
-			showFrequency( hexagon[18] );
-			
-			return;
-		}
-	}
+	let index = checkMouse( x, y, hoverState );
 	
-	// If we didn't find a hover, kill any hover that might exist.
-	killHover();
+	if( index < 0 && stateKeys(hoverState) )
+	{
+		let ctx = document.getElementById('demoCanvas').getContext('2d');		
+		killAllState(ctx,hoverState);
+	}
 }
 
 //////////////////////////////////////////////////
@@ -169,33 +84,13 @@ function handleMouseMove( x, y )
 function handleMouseDown( x, y )
 {
 	
-	// Go through each scale frequency. Each of these will correspond to a hexagon.
-	for( var i=0; i<scale.length; i++ )
+	let index = checkMouse( x, y, mouseDownState );
+	if( index >= 0 && !playing[index] )
 	{
-		// Get the nexagon at index i.
-		hex = hexagonList[i];
-		
-		// See if x and y are in the hexagon.
-		if( isInHexagon( x, y, hex ) )
-		{
-			// If so kill any hover that might exist.
-			killHover();
-
-			// Draw the nexagon in the clickColor (that was calculated upon creation).
-			drawHexagon(hex[15],hex[16],hex[17],clickColor,hex[18],false,hex[19]);
-			
-			// Set our click index so we know we are clicking.
-			detectedClickIndex = i;
-			
-			// Call the playNote() function based on the index.
-			playNote(i);
-			
-			return;
-		}
+		detectedClickIndex = index;
+		playNote( index );
 	}
 	
-	// If we didn't find a click, kill any hover that might exist.
-	killHover();
 }
 
 //////////////////////////////////////////////////
@@ -211,11 +106,17 @@ function handleMouseDown( x, y )
 //
 function handleMouseUp( x, y )
 {
-	// Turn any note that is playing off.
-	killNote(detectedClickIndex);
-	
-	// Kill any click that has been recorded.
-	killClick(x,y);
+	if( detectedClickIndex >= 0 && playing[detectedClickIndex] )
+	{
+		if( stateKeys( mouseDownState ) )
+		{
+			let ctx = document.getElementById('demoCanvas').getContext('2d');		
+			killAllState(ctx,mouseDownState);
+			checkMouse( x, y, hoverState );
+		}
+		killNote( detectedClickIndex );
+		detectedClickIndex = -1;
+	}
 }
 
 //////////////////////////////////////////////////

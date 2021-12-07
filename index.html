@@ -3,9 +3,9 @@
 	<title>Microtonal Scale Demo</title>
 	
 	<link rel="stylesheet" href="css/styles.css">
-	<script src="js/color.js"></script>
+	<script src="js/enums.js"></script>
+	<script src="js/keyboard.js"></script>
 	<script src="js/ui.js"></script>
-	<script src="js/hexagon.js"></script>
 	<script src="js/soundFiles.js"></script>
 	<script src="js/scales.js"></script>
 	<script src="js/canvasEvents.js"></script>
@@ -14,8 +14,14 @@
 </head>
 <body onload="setup();" id="myBody">
 
-	<h1>Welcome! This is a demo of microtonal scale generation.</h1>
+	<h1>Welcome! This is a demo of microtonal scales.</h1>
 
+	<div id="miniKeyboard">
+		<img src="images/blankbutton.png" id="minus" onclick="doMinus();" />
+		<canvas id="mini"></canvas>
+		<img src="images/blankbutton.png" id="plus" onclick="doPlus();" />
+	</div>
+	
 	<canvas id="demoCanvas">
 	</canvas>
 
